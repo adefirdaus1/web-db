@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rincian Posisi</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .back {
+      margin-bottom: 15px;
+      cursor: pointer;
+      color: #38bdf8;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:15px;
+    }
+
+    .filters {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .filters div {
+      display:flex;
+      flex-direction:column;
+      font-size:12px;
+    }
+
+    input, select {
+      padding:7px;
+      border-radius:6px;
+      border:none;
+      background:#1e293b;
+      color:white;
+      min-width:120px;
+    }
+
+    .actions {
+      display:flex;
+      gap:8px;
+    }
+
+    .btn {
+      padding:8px 14px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+      color:white;
+      font-size:12px;
+      transition:0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      opacity:0.9;
+    }
+
+    .primary { background:#38bdf8; }
+    .excel { background:#22c55e; }
+    .pdf { background:#ef4444; }
+
+    .btn:disabled {
+      opacity:0.4;
+      cursor:not-allowed;
+    }
+
+    .summary {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .box {
+      flex:1;
+      min-width:120px;
+      background: rgba(56,189,248,0.2);
+      border:1px solid rgba(56,189,248,0.3);
+      padding:10px;
+      border-radius:10px;
+      text-align:center;
+    }
+
+    .box span {
+      font-size:18px;
+      font-weight:bold;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+    }
+
+    th, td {
+      padding:6px;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+    }
+
+    th {
+      background: rgba(255,255,255,0.05);
+      position:sticky;
+      top:0;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .spinner {
+      border:5px solid rgba(255,255,255,0.1);
+      border-top:5px solid #38bdf8;
+      border-radius:50%;
+      width:35px;
+      height:35px;
+      animation:spin 1s linear infinite;
+      margin:auto;
+    }
+
+    @keyframes spin {
+      100% { transform:rotate(360deg); }
+    }
+
+    .center {
+      text-align:center;
+      margin:15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="back" onclick="window.location.href='/rekeningapps'">← Kembali</div>
+
+<h2>Rincian Posisi</h2>
+
+<div class="card">
+  <div class="topbar">
+
+    <div class="filters">
+      <div>
+        Periode
+        <input id="p2" placeholder="YYYYMM">
+      </div>
+
+      <div>
+        Cabang
+        <select id="cabang">
+          <option value="">Semua</option>
+          <option value="1">Ungaran</option>
+          <option value="2">Salatiga</option>
+          <option value="3">Ambarawa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnLoad" class="btn primary" disabled>Tampilkan</button>
+      <button id="btnExport" class="btn excel" disabled>Excel</button>
+      <button id="btnPDF" class="btn pdf" disabled>PDF</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="card summary">
+  <div class="box">SR Baru<br><span id="sr">0</span></div>
+  <div class="box">Sambung<br><span id="sambung">0</span></div>
+  <div class="box">Aktif<br><span id="aktif">0</span></div>
+  <div class="box">Putus<br><span id="putus">0</span></div>
+</div>
+
+<div id="loading" class="center" style="display:none;">
+  <div class="spinner"></div>
+  <div>Loading...</div>
+</div>
+
+<div class="card">
+  <table id="table"></table>
+</div>
+
+<!-- SCRIPT LU TETAP (GUE GA UBAH LOGICNYA) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
+
+<script src="/rincian-posisi.js"></script>
+</body>
+</html>

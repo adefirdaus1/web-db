@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rekening Apps</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border: 1px solid #38bdf8;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(circle, rgba(56,189,248,0.2), transparent);
+      top: -50%;
+      left: -50%;
+      transform: rotate(25deg);
+    }
+
+    .title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #38bdf8;
+    }
+
+    .desc {
+      font-size: 12px;
+      color: #cbd5f5;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Rekening Apps</h1>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('/rekeningapps/rincian-posisi')">
+      <div class="title">Rincian Posisi</div>
+      <div class="desc">Data perubahan pelanggan (SR Baru, Putus, dll)</div>
+    </div>
+
+    <div class="card" onclick="go('/rekeningapps/belum-terbit')">
+      <div class="title">Rekening Belum Terbit</div>
+      <div class="desc">Data rincian rekening yang belum terbit rekening</div>
+    </div>
+
+    <div class="card" onclick="alert('Hubungi Ade yg ganteng hehehehe ')">
+      <div class="title">Statistik</div>
+      <div class="desc">Analisis & summary data</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    © 2026 Rekening Apps • Copyright Reserved
+  </div>
+
+</div>
+
+<script>
+function go(page){
+  window.location.href = page;
+}
+</script>
+
+</body>
+</html>
