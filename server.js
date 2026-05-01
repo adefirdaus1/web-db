@@ -39,8 +39,8 @@ app.get("/rekeningapps/duplikat-pemakaian", (req, res) => {
   res.sendFile(path.join(publicPath, "duplikat-pemakaian.html"));
 });
 
-app.get("/rekeningapps/pemakaian-pasif", (req, res) => {
-  res.sendFile(path.join(publicPath, "pemakaian-pasif.html"));
+app.get("/rekeningapps/rentang-pemakaian", (req, res) => {
+  res.sendFile(path.join(publicPath, "rentang-pemakaian.html"));
 });
 
 /* STATIC (WAJIB PALING BAWAH) */
@@ -321,7 +321,7 @@ app.get("/duplikat-pemakaian", async (req, res) => {
   }
 });
 
-app.get("/pemakaian-pasif", async (req, res) => {
+app.get("/rentang-pemakaian", async (req, res) => {
   try {
     await sql.connect(config);
 
@@ -364,8 +364,8 @@ app.get("/pemakaian-pasif", async (req, res) => {
 });
 
 /* route halaman */
-app.get("/rekeningapps/pemakaian-pasif", (req, res) => {
-  res.sendFile(path.join(publicPath, "pemakaian-pasif.html"));
+app.get("/rekeningapps/rentang-pemakaian", (req, res) => {
+  res.sendFile(path.join(publicPath, "rentang-pemakaian.html"));
 });
 
 const PORT = process.env.PORT || 3000;

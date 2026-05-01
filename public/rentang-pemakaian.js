@@ -20,7 +20,7 @@ btnLoad.onclick = async ()=>{
   loading.style.display="block";
   table.innerHTML="";
 
-  const res = await fetch(`/pemakaian-pasif?periode=${periode.value}&min=${min.value}&max=${max.value}&kdCab=${cabang.value}`);
+  const res = await fetch(`/rentang-pemakaian?periode=${periode.value}&min=${min.value}&max=${max.value}&kdCab=${cabang.value}`);
   const data = await res.json();
 
   lastData = data;
@@ -123,7 +123,7 @@ btnExport.onclick=()=>{
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(cleanAll),"Data");
   }
 
-  XLSX.writeFile(wb,`PemakaianPasif_${periode.value}.xlsx`);
+  XLSX.writeFile(wb,`RentangPemakaian_${periode.value}.xlsx`);
 };
 
 /* PDF */
@@ -137,7 +137,7 @@ btnPDF.onclick=()=>{
 
   const doc=new jsPDF("l");
 
-  doc.text(`Pemakaian Pasif - ${periode.value}`,14,10);
+  doc.text(`Rentang Pemakaian - ${periode.value}`,14,10);
 
   doc.autoTable({
     head:[cols],
@@ -145,5 +145,5 @@ btnPDF.onclick=()=>{
     startY:15
   });
 
-  doc.save(`PemakaianPasif_${periode.value}.pdf`);
+  doc.save(`RentangPemakaian_${periode.value}.pdf`);
 };

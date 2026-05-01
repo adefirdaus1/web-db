@@ -3,126 +3,304 @@
 <head>
   <title>Rekening Apps</title>
 
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: white;
+    :root{
+      --accent:#38bdf8;
+      --bg1:#0f172a;
+      --bg2:#1e293b;
+      --card:rgba(255,255,255,0.05);
+      --border:rgba(255,255,255,0.08);
     }
 
-    .container {
-      padding: 30px;
+    body{
+      margin:0;
+      font-family:'Segoe UI',sans-serif;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:white;
+      display:flex;
     }
 
-    h1 {
-      margin-bottom: 25px;
-      font-weight: 600;
-      letter-spacing: 1px;
+    /* SIDEBAR */
+    .sidebar{
+      width:230px;
+      height:100vh;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      border-right:1px solid rgba(255,255,255,0.05);
+      padding:20px 14px;
+      box-sizing:border-box;
+      transition:.25s;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+    .sidebar.collapsed{ width:70px; }
+
+    .logo{
+      font-size:16px;
+      font-weight:600;
+      color:var(--accent);
+      margin-bottom:20px;
     }
 
-    .card {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 20px;
-      cursor: pointer;
-      transition: 0.25s;
-      position: relative;
-      overflow: hidden;
+    .toggle{
+      cursor:pointer;
+      margin-bottom:15px;
+      opacity:.7;
     }
 
-    .card:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      border: 1px solid #38bdf8;
+    .menu{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      width: 120%;
-      height: 120%;
-      background: radial-gradient(circle, rgba(56,189,248,0.2), transparent);
-      top: -50%;
-      left: -50%;
-      transform: rotate(25deg);
+    .menu-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:13px;
+      color:#cbd5f5;
+      transition:.2s;
     }
 
-    .title {
-      font-size: 16px;
-      margin-bottom: 10px;
-      color: #38bdf8;
+    .menu-item:hover{
+      background:rgba(56,189,248,0.15);
+      color:white;
     }
 
-    .desc {
-      font-size: 12px;
-      color: #cbd5f5;
+    .menu-item.active{
+      background:#274b63;
+      color:white;
     }
 
-    .footer {
-      margin-top: 40px;
-      font-size: 12px;
-      opacity: 0.5;
+    .menu-item i{ width:18px; }
+
+    .sidebar.collapsed .menu-item span,
+    .sidebar.collapsed .logo-text{
+      display:none;
+    }
+
+    /* MAIN */
+    .main{
+      flex:1;
+      padding:30px;
+    }
+
+    h1{ font-size:22px; margin-bottom:4px; }
+
+    .subtitle{
+      font-size:13px;
+      opacity:.6;
+      margin-bottom:25px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:20px;
+    }
+
+    /* CARD */
+    .card{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:18px;
+      cursor:pointer;
+      transition:.25s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* glow layer */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 60%);
+      opacity:0;
+      transition:.3s;
+    }
+
+    .card:hover{
+      box-shadow:
+        0 10px 24px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(56,189,248,0.25);
+    }
+
+    .card:hover::before{ opacity:1; }
+
+    /* icon */
+    .icon{
+      font-size:22px;
+      color:var(--accent);
+      transition:.2s;
+    }
+
+    .card:hover .icon{
+      color:#67e8f9;
+    }
+
+    .title{
+      font-size:15px;
+      font-weight:600;
+    }
+
+    .desc{
+      font-size:12px;
+      color:#cbd5f5;
+    }
+
+    .badge{
+      margin-left:auto;
+      font-size:11px;
+      padding:6px 12px;
+      border-radius:999px;
+    }
+
+    .success{ background:rgba(74,222,128,0.2); color:#4ade80; }
+    .warn{ background:rgba(250,204,21,0.2); color:#facc15; }
+    .danger{ background:rgba(248,113,113,0.2); color:#f87171; }
+    .info{ background:rgba(56,189,248,0.2); color:#38bdf8; }
+
+    .footer{
+      margin-top:60px;
+      text-align:center;
+      font-size:12px;
+      opacity:.4;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="sidebar" id="sidebar">
 
-  <h1>Rekening Apps | Make It Simple </h1>
+  <div class="toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <div class="logo">
+    <span class="logo-text">Rekening Apps</span>
+  </div>
+
+  <div class="menu">
+    <div class="menu-item active" onclick="go('/')">
+      <i class="fas fa-home"></i> <span>Dashboard</span>
+    </div>
+
+    <div class="menu-item" onclick="go('/rekeningapps/rincian-posisi')">
+      <i class="fas fa-list"></i> <span>Rincian Posisi</span>
+    </div>
+
+    <div class="menu-item" onclick="go('/rekeningapps/belum-terbit')">
+      <i class="fas fa-file-invoice"></i> <span>Belum Terbit</span>
+    </div>
+
+    <div class="menu-item" onclick="go('/rekeningapps/pemakaian-minus')">
+      <i class="fas fa-arrow-down"></i> <span>Pemakaian Minus</span>
+    </div>
+
+    <div class="menu-item" onclick="go('/rekeningapps/duplikat-pemakaian')">
+      <i class="fas fa-copy"></i> <span>Duplikat</span>
+    </div>
+
+    <div class="menu-item" onclick="go('/rekeningapps/rentang-pemakaian')">
+      <i class="fas fa-chart-bar"></i> <span>Rentang Pemakaian</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <h1>Rekening Apps</h1>
+  <div class="subtitle">Monitoring BIOS Realtime</div>
 
   <div class="grid">
 
-    <div class="card" onclick="go('/rekeningapps/rincian-posisi')">
+    <div class="grid">
+
+  <div class="card" onclick="go('/rekeningapps/rincian-posisi')">
+    <div class="icon"><i class="fas fa-list"></i></div>
+    <div>
       <div class="title">Rincian Posisi</div>
-      <div class="desc">Data perubahan pelanggan (SR Baru, Putus, dll)</div>
+      <div class="desc">Perubahan pelanggan</div>
     </div>
+    <div class="badge success">Normal</div>
+  </div>
 
-    <div class="card" onclick="go('/rekeningapps/belum-terbit')">
-      <div class="title">Rekening Belum Terbit</div>
-      <div class="desc">Data rincian rekening yang belum terbit</div>
+  <div class="card" onclick="go('/rekeningapps/belum-terbit')">
+    <div class="icon"><i class="fas fa-file-invoice"></i></div>
+    <div>
+      <div class="title">Belum Terbit</div>
+      <div class="desc">Rekening pending</div>
     </div>
+    <div class="badge warn">Pending</div>
+  </div>
 
-    <div class="card" onclick="alert('Hubungi Ade yg ganteng mwehehehehe ')">
+  <div class="card" onclick="alert('Statistik belum tersedia')">
+    <div class="icon"><i class="fas fa-chart-line"></i></div>
+    <div>
       <div class="title">Statistik</div>
-      <div class="desc">Analisis & summary data</div>
+      <div class="desc">Analisis data</div>
     </div>
-	
-	 <div class="card" onclick="go('/rekeningapps/pemakaian-minus')">
+    <div class="badge info">Proses</div>
+  </div>
+
+  <div class="card" onclick="go('/rekeningapps/pemakaian-minus')">
+    <div class="icon"><i class="fas fa-arrow-down"></i></div>
+    <div>
       <div class="title">Pemakaian Minus</div>
-      <div class="desc">Data pelanggan dengan pemakaian air minus</div>
+      <div class="desc">Anomali pemakaian</div>
     </div>
-	
-	<div class="card" onclick="go('/rekeningapps/duplikat-pemakaian')">
-  <div class="title">Duplikat Pemakaian</div>
-  <div class="desc">Deteksi data pemakaian duplikat per pelanggan</div>
-</div>
-	
-	<div class="card" onclick="go('/rekeningapps/pemakaian-pasif')">
-  <div class="title">Pemakaian Pasif</div>
-  <div class="desc">Data pelanggan dengan pemakaian rendah/pasif</div>
-</div>
+    <div class="badge danger">Warning</div>
+  </div>
 
+  <div class="card" onclick="go('/rekeningapps/duplikat-pemakaian')">
+    <div class="icon"><i class="fas fa-copy"></i></div>
+    <div>
+      <div class="title">Duplikat</div>
+      <div class="desc">Data ganda</div>
+    </div>
+    <div class="badge warn">Review</div>
+  </div>
+
+  <div class="card" onclick="go('/rekeningapps/rentang-pemakaian')">
+    <div class="icon"><i class="fas fa-chart-bar"></i></div>
+    <div>
+      <div class="title">Rentang Pemakaian</div>
+      <div class="desc">Analisa pemakaian</div>
+    </div>
+    <div class="badge warn">Review</div>
+  </div>
+
+</div>
 
   </div>
 
-  <div class="footer">
-    © 2026 Rekening Apps • Copyright Reserved
-  </div>
-
+  <div class="footer">© 2026 Rekening Apps</div>
 </div>
 
 <script>
+const sidebar = document.getElementById('sidebar');
+
+if(localStorage.getItem('sidebar')==='collapsed'){
+  sidebar.classList.add('collapsed');
+}
+
+function toggleSidebar(){
+  sidebar.classList.toggle('collapsed');
+  localStorage.setItem('sidebar',
+    sidebar.classList.contains('collapsed') ? 'collapsed' : 'open'
+  );
+}
+
 function go(page){
   window.location.href = page;
 }
