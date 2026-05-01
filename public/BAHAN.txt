@@ -1,0 +1,71 @@
+const tarif = {
+  DK: {},
+  LK: {}
+};
+
+// helper bikin 4 blok standar
+function makeBlok(h1, h2, h3, h4){
+  return [
+    { min: 1,  max: 10,        harga: h1 },   // 1–10
+    { min: 11, max: 20,        harga: h2 },   // 11–20
+    { min: 21, max: 30,        harga: h3 },   // 21–30
+    { min: 31, max: Infinity,  harga: h4 }    // 31+
+  ];
+}
+
+// === ISI DI SINI SESUAI TABEL LU ===
+// contoh isi 2 golongan, sisanya tinggal copy-paste:
+
+tarif.DK["RT1"] = makeBlok(1590, 2700, 3330, 4330);
+tarif.LK["RT1"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["RT2"] = makeBlok(1760, 2990, 3700, 4810);
+tarif.LK["RT2"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["RT3"] = makeBlok(2120, 2000, 3000, 4000);
+tarif.LK["RT3"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["RT4"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["RT4"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["SUM"] = makeBlok(1500, 2000, 3000, 4000);
+tarif.LK["SUM"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["SKS"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["SKS"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["RSS"] = makeBlok(1500, 2000, 3000, 4000);
+tarif.LK["RSS"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["RSP"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["RSP"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["NIM"] = makeBlok(1500, 2000, 3000, 4000);
+tarif.LK["NIM"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["NIK"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["NIK"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["NIB"] = makeBlok(1500, 2000, 3000, 4000);
+tarif.LK["NIB"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["INK"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["INK"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["INM"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["INM"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["INB"] = makeBlok(1500, 2000, 3000, 4000);
+tarif.LK["INB"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["IPM"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["IPM"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["TNI"] = makeBlok(1500, 2000, 3000, 4000);
+tarif.LK["TNI"] = makeBlok(2000, 2500, 3500, 4500);
+
+tarif.DK["LPU"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["LPU"] = makeBlok(2100, 2600, 3600, 4600);
+
+tarif.DK["LPT"] = makeBlok(1600, 2100, 3100, 4100);
+tarif.LK["LPT"] = makeBlok(2100, 2600, 3600, 4600);

@@ -43,6 +43,9 @@ app.get("/rekeningapps/rentang-pemakaian", (req, res) => {
   res.sendFile(path.join(publicPath, "rentang-pemakaian.html"));
 });
 
+app.get("/rekeningapps/simulasi-tarif", (req, res) => {
+  res.sendFile(path.join(publicPath, "simulasi-tarif.html"));
+});
 /* STATIC (WAJIB PALING BAWAH) */
 app.use(express.static(publicPath));
 
@@ -56,6 +59,115 @@ const config = {
     trustServerCertificate: true
   }
 };
+
+// ===== Helper blok 1–10, 11–20, 21–30, 31+ =====
+function makeBlok(h1, h2, h3, h4){
+  return [
+    { min: 1,  max: 10,        harga: h1 },
+    { min: 11, max: 20,        harga: h2 },
+    { min: 21, max: 30,        harga: h3 },
+    { min: 31, max: Infinity,  harga: h4 }
+  ];
+}
+
+// ===== Tarif =====
+const tarif = { DK: {}, LK: {} };
+
+// --- LK ---
+tarif.LK["SUM"] = makeBlok(1050,1050,1050,1250);
+tarif.LK["SKS"] = makeBlok(1250,1250,1250,1500);
+tarif.LK["IPM"] = makeBlok(2500,4200,5200,6700);
+tarif.LK["TNI"] = makeBlok(2500,4200,5200,6700);
+tarif.LK["LPU"] = makeBlok(1900,1900,2800,4500);
+tarif.LK["LPT"] = makeBlok(2500,2500,5200,6200);
+tarif.LK["RSP"] = makeBlok(2500,2500,3600,4600);
+tarif.LK["RSS"] = makeBlok(4600,4700,6300,7400);
+tarif.LK["NIK"] = makeBlok(2800,3800,4800,7000);
+tarif.LK["NIM"] = makeBlok(4600,6300,8000,9500);
+tarif.LK["NIB"] = makeBlok(6000,8100,10300,12300);
+tarif.LK["INK"] = makeBlok(6200,8400,11000,13000);
+tarif.LK["INM"] = makeBlok(6900,9300,12200,14500);
+tarif.LK["INB"] = makeBlok(7200,9800,12800,15200);
+tarif.LK["TK"]  = makeBlok(2000,3200,4000,5000);
+tarif.LK["RT1"] = makeBlok(2000,3200,4000,5000);
+tarif.LK["RT2"] = makeBlok(2200,3500,4300,5500);
+tarif.LK["RT3"] = makeBlok(2500,4200,5200,6700);
+tarif.LK["RT4"] = makeBlok(3200,5200,6500,8200);
+
+// --- DK ---
+tarif.DK["SUM"] = makeBlok(880,880,880,1070);
+tarif.DK["SKS"] = makeBlok(1070,1070,1070,1290);
+tarif.DK["IPM"] = makeBlok(2120,3590,4440,5770);
+tarif.DK["TNI"] = makeBlok(2120,3590,4440,5770);
+tarif.DK["LPU"] = makeBlok(1590,1590,2390,4000);
+tarif.DK["LPT"] = makeBlok(2120,2120,4440,5330);
+tarif.DK["RSP"] = makeBlok(2120,2120,3180,4070);
+tarif.DK["RSS"] = makeBlok(3890,3910,5290,6250);
+tarif.DK["NIK"] = makeBlok(2400,3260,4170,6160);
+tarif.DK["NIM"] = makeBlok(3890,5290,6770,8130);
+tarif.DK["NIB"] = makeBlok(5090,6920,8850,10620);
+tarif.DK["INK"] = makeBlok(5240,7150,9430,11220);
+tarif.DK["INM"] = makeBlok(5860,7990,10540,12540);
+tarif.DK["INB"] = makeBlok(6160,8410,11090,13200);
+tarif.DK["TK"]  = makeBlok(1590,2700,3330,4330);
+tarif.DK["RT1"] = makeBlok(1590,2700,3330,4330);
+tarif.DK["RT2"] = makeBlok(1760,2990,3700,4810);
+tarif.DK["RT3"] = makeBlok(2120,3590,4440,5770);
+tarif.DK["RT4"] = makeBlok(2830,4790,5920,7690);
+
+// ===== Bea Admin (per golongan) =====
+const beaADMMap = {
+  SUM:900, SKS:1080, IPM:2160, TNI:2160, LPU:1620, LPT:2160,
+  RSP:2160, RSS:2700, NIK:2160, NIM:2700, NIB:3420, INK:3420,
+  INM:4860, INB:7200, TK:1620, RT1:1620, RT2:1800, RT3:2160, RT4:2880
+};
+
+// ===== Dana Meter 1/2" (per golongan) =====
+const beaDMMap = {
+  SUM:9100, SKS:10170, IPM:11590, TNI:11590, LPU:9630, LPT:11590,
+  RSP:10340, RSS:16050, NIK:10340, NIM:11050, NIB:12830, INK:14080,
+  INM:13890, INB:12800, RT1:9630, RT2:10700, RT3:11590, RT4:12120
+};
+
+function hitungTarif(gol, pemakaian, wilayah){
+  const rules = tarif[wilayah]?.[gol];
+  if (!rules) throw new Error("Golongan/tarif tidak ditemukan");
+
+  const beaADM = beaADMMap[gol];
+  const beaDM  = beaDMMap[gol];
+
+  if (beaADM == null || beaDM == null) {
+    throw new Error("Bea ADM/DM belum terdefinisi untuk golongan ini");
+  }
+
+  let beaAir = 0;
+  let beaPasif = 0;
+
+  const hitungBlok = (pakai) => {
+    let total = 0;
+    for (const r of rules) {
+      if (pakai >= r.min) {
+        const volume = Math.min(pakai, r.max) - (r.min - 1);
+        total += volume * r.harga;
+      }
+    }
+    return total;
+  };
+
+  if (pemakaian === 0) {
+    beaPasif = hitungBlok(10); // rule pasif
+  } else {
+    beaAir = hitungBlok(pemakaian);
+  }
+
+  return {
+    beaAir,
+    beaPasif,
+    beaADM,
+    beaDM,
+    totalTagihan: beaAir + beaPasif + beaADM + beaDM
+  };
+}
 
 app.get("/laporan", async (req, res) => {
   try {
@@ -363,6 +475,58 @@ app.get("/rentang-pemakaian", async (req, res) => {
   }
 });
 
+app.get("/simulasi-tarif", (req, res) => {
+  try {
+    const { gol, pakai, wilayah } = req.query;
+
+    if (!gol || !wilayah) {
+      return res.status(400).json({ error: "Parameter gol & wilayah wajib" });
+    }
+
+    const pemakaian = parseInt(pakai || 0, 10);
+    if (Number.isNaN(pemakaian) || pemakaian < 0) {
+      return res.status(400).json({ error: "Pemakaian tidak valid" });
+    }
+
+    const hasil = hitungTarif(gol, pemakaian, wilayah);
+
+    res.json({
+      gol,
+      wilayah,
+      pemakaian,
+      ...hasil
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+app.get("/simulasi-tarif", (req, res) => {
+  try {
+    const { gol, pakai, wilayah } = req.query;
+
+    if (!gol || !wilayah) {
+      return res.status(400).json({ error: "Parameter gol & wilayah wajib" });
+    }
+
+    const pemakaian = parseInt(pakai || 0, 10);
+    if (Number.isNaN(pemakaian) || pemakaian < 0) {
+      return res.status(400).json({ error: "Pemakaian tidak valid" });
+    }
+
+    const hasil = hitungTarif(gol, pemakaian, wilayah);
+
+    res.json({
+      gol,
+      wilayah,
+      pemakaian,
+      ...hasil
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 /* route halaman */
 app.get("/rekeningapps/rentang-pemakaian", (req, res) => {
   res.sendFile(path.join(publicPath, "rentang-pemakaian.html"));

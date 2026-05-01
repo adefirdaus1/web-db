@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simulasi Tarif</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:'Segoe UI',sans-serif;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+    }
+
+    .container{
+      width:100%;
+      max-width:420px;
+      text-align:center;
+    }
+
+    h1{
+      margin-bottom:20px;
+    }
+
+    .box{
+      background:rgba(255,255,255,0.05);
+      padding:25px;
+      border-radius:16px;
+    }
+
+    select,input{
+      width:100%;
+      padding:10px;
+      margin-bottom:12px;
+      border-radius:8px;
+      border:none;
+      background:#1e293b;
+      color:white;
+    }
+
+    select option{
+      background:#0f172a;
+    }
+
+    /* ===== RADIO CLICKABLE FULL BOX ===== */
+    .radio-group{
+      margin:15px 0;
+    }
+
+    .radio-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.04);
+      margin-bottom:8px;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    .radio-row:hover{
+      background:rgba(255,255,255,0.08);
+    }
+
+    .radio-row input{
+      accent-color:#38bdf8;
+      width:18px;
+      height:18px;
+    }
+
+    /* highlight yang dipilih */
+    .radio-row:has(input:checked){
+      background:rgba(56,189,248,0.15);
+      outline:1px solid rgba(56,189,248,0.5);
+    }
+
+    /* ===== BUTTON MODERN ===== */
+    .btn-primary{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      color:white;
+      background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+      box-shadow:0 0 15px rgba(56,189,248,0.4);
+      transition:all 0.25s ease;
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 25px rgba(56,189,248,0.7);
+    }
+
+    .btn-secondary{
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border:none;
+      border-radius:10px;
+      background:rgba(255,255,255,0.08);
+      color:white;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,0.15);
+    }
+
+    .result{
+      margin-top:15px;
+      background:#020617;
+      padding:15px;
+      border-radius:10px;
+      text-align:left;
+    }
+
+    .line{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:5px;
+    }
+
+    .total{
+      margin-top:10px;
+      font-weight:bold;
+      color:#4ade80;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Simulasi Tarif</h1>
+
+  <div class="box">
+
+    <select id="gol">
+      <option>RT1</option>
+      <option>RT2</option>
+      <option>RT3</option>
+      <option>RT4</option>
+      <option>SUM</option>
+      <option>SKS</option>
+      <option>IPM</option>
+      <option>TNI</option>
+      <option>LPU</option>
+      <option>LPT</option>
+      <option>RSP</option>
+      <option>RSS</option>
+      <option>NIK</option>
+      <option>NIM</option>
+      <option>NIB</option>
+      <option>INK</option>
+      <option>INM</option>
+      <option>INB</option>
+      <option>TK</option>
+    </select>
+
+    <input type="number" id="pakai" placeholder="Pemakaian (m³)" />
+
+    <div class="radio-group">
+
+      <label class="radio-row">
+        <span>Dalam Kota</span>
+        <input type="radio" name="wilayah" value="DK" checked>
+      </label>
+
+      <label class="radio-row">
+        <span>Luar Kota</span>
+        <input type="radio" name="wilayah" value="LK">
+      </label>
+
+    </div>
+
+    <button class="btn-primary" onclick="hitung()">Hitung</button>
+
+    <button class="btn-secondary" onclick="window.location.href='/rekeningapps'">
+      ← Kembali ke Dashboard
+    </button>
+
+    <div id="result" class="result" style="display:none"></div>
+
+  </div>
+</div>
+
+<script>
+async function hitung(){
+  const gol = document.getElementById("gol").value;
+  const pakai = document.getElementById("pakai").value || 0;
+  const wilayah = document.querySelector('input[name="wilayah"]:checked').value;
+
+  const res = await fetch(`/simulasi-tarif?gol=${gol}&pakai=${pakai}&wilayah=${wilayah}`);
+  const data = await res.json();
+
+  document.getElementById("result").style.display = "block";
+  document.getElementById("result").innerHTML = `
+    <div class="line"><span>BeaAir</span><span>${data.beaAir.toLocaleString()}</span></div>
+    <div class="line"><span>BeaPasif</span><span>${data.beaPasif.toLocaleString()}</span></div>
+    <div class="line"><span>BeaAdm</span><span>${data.beaADM.toLocaleString()}</span></div>
+    <div class="line"><span>BeaDM</span><span>${data.beaDM.toLocaleString()}</span></div>
+    <hr>
+    <div class="line total"><span>Total</span><span>${data.totalTagihan.toLocaleString()}</span></div>
+  `;
+}
+</script>
+
+</body>
+</html>
