@@ -31,6 +31,10 @@ app.get("/rekeningapps/rincian-posisi", (req, res) => {
   res.sendFile(path.join(publicPath, "rincian-posisi.html"));
 });
 
+app.get("/rekeningapps/pemakaian-minus", (req, res) => {
+  res.sendFile(path.join(publicPath, "pemakaian-minus.html"));
+});
+
 /* STATIC (WAJIB PALING BAWAH) */
 app.use(express.static(publicPath));
 
@@ -225,6 +229,41 @@ app.get("/rekening-belum-terbit", async (req, res) => {
           )
           AND (@kdCab IS NULL OR CAST(p.kdCab AS VARCHAR) = @kdCab)
       ORDER BY p.NoPelanggan
+    `);
+
+    res.json(result.recordset);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+app.get("/pemakaian-minus", async (req, res) => {
+  try {
+    await sql.connect(config);
+
+    const { periode } = req.query;
+
+    const request = new sql.Request();
+    request.input("periode", sql.VarChar, periode);
+
+    const result = await request.query(`
+      SELECT 
+          a.NoPelanggan,
+          b.Nama,
+          b.Alamat,
+          b.Gol,
+		  b.kdCab,
+          a.PakaiAir AS Pemakaian,
+          (a.beaDM + a.beaADM) AS BebanTetap,
+          a.BeaAir AS BiayaAir,
+          a.BeaPasif AS BiayaPasif,
+          (a.beaDM + a.beaADM + a.BeaAir + a.BeaPasif) AS TotalTagihan,
+          @periode AS Periode
+      FROM PDAMBill.dbo.ft_TagihanAir(@periode) a  
+      JOIN PDAMBill.dbo.Pelanggan b ON a.NoPelanggan = b.NoPelanggan
+      WHERE a.PakaiAir < 0
+      ORDER BY a.PakaiAir DESC
     `);
 
     res.json(result.recordset);
