@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Duplikat Pemakaian</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:Segoe UI;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:#e5e7eb;
+      padding:20px;
+    }
+
+    h2{margin-bottom:15px}
+
+    .back{
+      color:#38bdf8;
+      cursor:pointer;
+      margin-bottom:10px;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.05);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:14px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .filters{
+      display:flex;
+      gap:15px;
+      flex-wrap:wrap;
+    }
+
+    input,select{
+      padding:10px;
+      border-radius:10px;
+      border:none;
+      background:#1e293b;
+      color:white;
+      width:150px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+    }
+
+    .btn{
+      padding:10px 16px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      color:white;
+    }
+
+    .primary{background:#0ea5e9}
+    .excel{background:#16a34a}
+    .pdf{background:#dc2626}
+
+    .btn:disabled{opacity:.4}
+
+    .summary{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .box{
+      flex:1;
+      min-width:150px;
+      background:rgba(56,189,248,0.15);
+      border:1px solid rgba(56,189,248,0.4);
+      border-radius:12px;
+      padding:15px;
+      text-align:center;
+    }
+
+    .box span{
+      font-size:20px;
+      font-weight:bold;
+    }
+
+    .table-wrapper{
+      max-height:400px;
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:#1e293b;
+      padding:10px;
+    }
+
+    td{
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+    }
+
+    tr:nth-child(even){background:rgba(255,255,255,0.03)}
+
+    .loading{
+      display:none;
+      text-align:center;
+      padding:20px;
+    }
+
+    .spinner{
+      width:40px;height:40px;
+      border:5px solid rgba(255,255,255,0.1);
+      border-top:5px solid #38bdf8;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:auto;
+    }
+
+    @keyframes spin{100%{transform:rotate(360deg)}}
+  </style>
+</head>
+
+<body>
+
+<div class="back" onclick="location.href='/rekeningapps'">← Kembali</div>
+
+<h2>Duplikat Pemakaian</h2>
+
+<div class="card">
+  <div class="topbar">
+
+    <div class="filters">
+      <div>
+        Periode<br>
+        <input id="periode" placeholder="YYYYMM">
+      </div>
+
+      <div>
+        Cabang<br>
+        <select id="cabang">
+          <option value="">Semua</option>
+          <option value="1">Ungaran</option>
+          <option value="2">Salatiga</option>
+          <option value="3">Ambarawa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnLoad" class="btn primary" disabled>Tampilkan</button>
+      <button id="btnExport" class="btn excel" disabled>Excel</button>
+      <button id="btnPDF" class="btn pdf" disabled>PDF</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="card summary">
+  <div class="box">Total<br><span id="total">0</span></div>
+  <div class="box">Ungaran<br><span id="ungaran">0</span></div>
+  <div class="box">Salatiga<br><span id="salatiga">0</span></div>
+  <div class="box">Ambarawa<br><span id="ambarawa">0</span></div>
+</div>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <div>Loading...</div>
+</div>
+
+<div class="card">
+  <div class="table-wrapper">
+    <table id="table"></table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
+
+<script src="/duplikat-pemakaian.js"></script>
+
+</body>
+</html>

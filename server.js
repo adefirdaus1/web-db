@@ -35,6 +35,14 @@ app.get("/rekeningapps/pemakaian-minus", (req, res) => {
   res.sendFile(path.join(publicPath, "pemakaian-minus.html"));
 });
 
+app.get("/rekeningapps/duplikat-pemakaian", (req, res) => {
+  res.sendFile(path.join(publicPath, "duplikat-pemakaian.html"));
+});
+
+app.get("/rekeningapps/pemakaian-pasif", (req, res) => {
+  res.sendFile(path.join(publicPath, "pemakaian-pasif.html"));
+});
+
 /* STATIC (WAJIB PALING BAWAH) */
 app.use(express.static(publicPath));
 
@@ -273,6 +281,93 @@ app.get("/pemakaian-minus", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
+app.get("/duplikat-pemakaian", async (req, res) => {
+  try {
+    await sql.connect(config);
+
+    const { periode, kdCab } = req.query;
+
+    const request = new sql.Request();
+    request.input("periode", sql.VarChar, periode);
+    request.input("kdCab", sql.VarChar, kdCab || null);
+
+    const result = await request.query(`
+      SELECT 
+          pa.NoPelanggan,
+          p.Nama,
+          p.Alamat,
+          p.Gol,
+          p.kdCab,
+          COUNT(*) AS JumlahDuplikat,
+          @periode AS Periode
+      FROM PDAMBill.dbo.PemakaianAir pa
+      JOIN PDAMBill.dbo.Pelanggan p 
+        ON pa.NoPelanggan = p.NoPelanggan
+      WHERE 
+          pa.Periode = @periode
+          AND (@kdCab IS NULL OR CAST(p.kdCab AS VARCHAR) = @kdCab)
+      GROUP BY 
+          pa.NoPelanggan, p.Nama, p.Alamat, p.Gol, p.kdCab
+      HAVING COUNT(*) > 1
+      ORDER BY JumlahDuplikat DESC
+    `);
+
+    res.json(result.recordset);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+app.get("/pemakaian-pasif", async (req, res) => {
+  try {
+    await sql.connect(config);
+
+    const { periode, min, max, kdCab } = req.query;
+
+    const request = new sql.Request();
+    request.input("periode", sql.VarChar, periode);
+    request.input("min_pakai", sql.Int, min ?? 0);
+    request.input("max_pakai", sql.Int, max ?? 0);
+    request.input("kdCab", sql.VarChar, kdCab || null);
+
+    const result = await request.query(`
+      SELECT 
+          t.NoPelanggan,
+          pl.Nama,
+          pl.Alamat,
+          pl.Gol,
+          pl.kdCab,
+          t.PakaiAir,
+          (t.beaDM + t.beaADM) AS BebanTetap,
+          t.BeaAir,
+          t.BeaPasif,
+          (t.beaDM + t.beaADM + t.BeaAir + t.BeaPasif) AS TotalTagihan,
+          @periode AS Periode
+      FROM PDAMBill.dbo.ft_TagihanAir(@periode) t
+      JOIN PDAMBill.dbo.Pelanggan pl 
+        ON t.NoPelanggan = pl.NoPelanggan
+      WHERE 
+          t.PakaiAir BETWEEN @min_pakai AND @max_pakai
+          AND (@kdCab IS NULL OR CAST(pl.kdCab AS VARCHAR) = @kdCab)
+      ORDER BY t.NoPelanggan ASC
+    `);
+
+    res.json(result.recordset);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+/* route halaman */
+app.get("/rekeningapps/pemakaian-pasif", (req, res) => {
+  res.sendFile(path.join(publicPath, "pemakaian-pasif.html"));
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
