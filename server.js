@@ -527,10 +527,6 @@ app.get("/simulasi-tarif", (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-/* route halaman */
-app.get("/rekeningapps/rentang-pemakaian", (req, res) => {
-  res.sendFile(path.join(publicPath, "rentang-pemakaian.html"));
-});
 
 const PORT = process.env.PORT || 3000;
 
